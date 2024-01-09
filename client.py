@@ -1,18 +1,52 @@
 # add better quit protocol
 # add nickname capability
-# add choice of port and 
-# add choice of hostname/ip
 
 
 import socket
 import sys
 import time
 import threading
+import re
+
+def is_valid_int(string):
+    try:
+        value = int(string)
+        return True
+    except ValueError:
+        return False
+
+def is_valid_ipv4(arg):
+    ip_pattern=re.compile(r'^([0-9]{1,3}\.){3}\d{1,3}$')
+    return bool(ip_pattern.findall(HOST))
+
+def is_valid_hostname(string):
+    pattern = re.compile(r'^[a-zA-Z0-9.-]+$', re.IGNORECASE)
+    return bool(pattern.match(string))
+
+PORT, HOST = None, None
+
+if len(sys.argv) != 3:
+    print("python client.py [HOST] [PORT]")
+    print('Taking default settings...')
+    HOST = socket.gethostbyname('localhost')
+    PORT = 50007
+else:
+    HOST = sys.argv[1]
+    # checking if hostname is valid using regex
+    while not is_valid_ipv4(HOST) or not is_valid_hostname(HOST):
+        HOST = input('HOST: ')
+    
+    PORT = sys.argv[2]
+    # checking if port number is valid
+    while True:
+        while not is_valid_int(PORT):
+            PORT = input('PORT: ')
+        PORT = int(PORT)
+        if 1 <= int(PORT) <= 65535:
+            break
+        PORT = 'None'
 
 
-
-HOST = socket.gethostbyname('localhost')
-PORT = 50007
 
 # taken & tweaked from echo client program at
 # https://docs.python.org/3/library/socket.html#example
