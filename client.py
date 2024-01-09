@@ -45,6 +45,7 @@ else:
         if 1 <= int(PORT) <= 65535:
             break
         PORT = 'None'
+    PORT = int(PORT)
 
 
 
