@@ -1,15 +1,29 @@
 # better quit protocol
-# add choice of max clients
-# add choice of hostname
-# add choice of port number
 # add nickname capability
 
 import socket
 import sys
 import threading
+import re
 
-HOST = None
-PORT = None
+def is_valid_int(string):
+    try:
+        value = int(string)
+        return True
+    except ValueError:
+        return False
+
+def is_valid_ipv4(arg):
+    ip_pattern=re.compile(r'^([0-9]{1,3}\.){3}\d{1,3}$')
+    return bool(ip_pattern.findall(HOST))
+
+def is_valid_hostname(string):
+    pattern = re.compile(r'^[a-zA-Z0-9.-]+$', re.IGNORECASE)
+    return bool(pattern.match(string))
+
+
+
+PORT, HOST = None, None
 MAX = None
 clients = []
 
@@ -20,10 +34,26 @@ if len(sys.argv) != 4:
     PORT = 50007
     MAX = 2
 else:
-    HOST = socket.gethostbyname(sys.argv[1])
-    PORT = int(sys.argv[2])
-    MAX = int(sys.argv[3])
+    HOST = sys.argv[1]
+    # checking if hostname is valid using regex
+    while not is_valid_ipv4(HOST) or not is_valid_hostname(HOST):
+        HOST = input('HOST: ')
+    
+    PORT = sys.argv[2]
+    # checking if port number is valid
+    while True:
+        while not is_valid_int(PORT):
+            PORT = input('PORT: ')
+        PORT = int(PORT)
+        if 1 <= int(PORT) <= 65535:
+            break
+        PORT = 'None'
+    PORT = int(PORT)
 
+    MAX = sys.argv[3]
+    while not is_valid_int(MAX):
+        MAX = input("Max number of clients: ")
+    MAX = int(MAX)
 
 
 
